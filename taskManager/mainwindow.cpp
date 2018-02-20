@@ -12,7 +12,9 @@
 #include<qevent.h>
 #include<qprocess.h>
 #include<qheaderview.h>
+#include<qcompleter.h>
 #include<iostream>
+
 mainWindow::mainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::mainWindow),preCpuStat(new cpuUseState),curCpuStat(new cpuUseState)
@@ -24,15 +26,17 @@ mainWindow::mainWindow(QWidget *parent) :
     ui->tbrDetails->setStyleSheet("border:0px;background-color:transparent");
     ui->lnEdQuery->installEventFilter(this);
     timer=new QTimer(this);
+    QTimer* longTimer=new QTimer(this);
     getCpuUseState(curCpuStat);
     createStatusBar();//中间要创建,需要在connect之前
     connect(timer,&QTimer::timeout,this,&mainWindow::updateTime);
     connect(timer,&QTimer::timeout,this,&mainWindow::updateCpuUseRate);
     connect(timer,&QTimer::timeout,this,&mainWindow::updateMemUseRate);
     connect(timer,&QTimer::timeout,this,&mainWindow::updateProcessesInfo);
+    connect(longTimer,&QTimer::timeout,this,&mainWindow::updateCompletedList);
     connect(ui->btQuery,&QPushButton::clicked,this,&mainWindow::queryProcessInfo);
     connect(ui->btNewPro,&QPushButton::clicked,this,&mainWindow::createANewProcess);
-    connect(ui->tbwProInfo->horizontalHeader(),&QHeaderView::sectionClicked,this,&mainWindow::headerSectionClicked);
+    //    connect(ui->tbwProInfo->horizontalHeader(),&QHeaderView::sectionClicked,this,&mainWindow::headerSectionClicked);
     connect(btEndTask,&QPushButton::clicked,this,&mainWindow::endTask);
     //    connect(ui->tbwProInfo,&QTableWidget::clicked,[=](){isEverSelectTabRecord=true;});
     fillSystemInfo();
@@ -41,6 +45,7 @@ mainWindow::mainWindow(QWidget *parent) :
     updateMemUseRate();
     setTBWHeaders();
     timer->start(1000);
+    longTimer->start(5000);
 }
 
 bool mainWindow::eventFilter(QObject* obj, QEvent* e)
@@ -163,10 +168,10 @@ void mainWindow::setTBWHeaders()
     ui->tbwProInfo->setHorizontalHeaderLabels(tbwProInfoHeaders);
 }
 
-void mainWindow::headerSectionClicked(int index)
-{
-    std::cout<<index<<std::endl;
-}
+//void mainWindow::headerSectionClicked(int index)
+//{会被刷新刷掉,由于排序方式很坑,因此决定不进行排序，仅按照pid的自然数顺序排序
+//    ui->tbwProInfo->sortByColumn(index,Qt::AscendingOrder);
+//}
 
 void mainWindow::insertARowIntoTable(const processInfo* const process,int rowsIndex)
 {
@@ -212,7 +217,8 @@ void mainWindow::updateProcessesInfo()
     int row=ui->tbwProInfo->currentIndex().row();
     int hvalue=ui->tbwProInfo->verticalScrollBar()->value();
     getProcessesInfo(processes);
-    removeAllRows();
+    //    removeAllRows();
+    ui->tbwProInfo->clearContents();
     int rowsIndex=0;
     for(auto iter=processes.begin();iter!=processes.end();++iter,++rowsIndex)
     {
@@ -295,6 +301,26 @@ void mainWindow::endTask()
         int row=ui->tbwProInfo->currentIndex().row();
         killAProcess(ui->tbwProInfo->item(row,1)->text().toShort());
     }
+}
+
+void mainWindow::updateCompletedList()
+{
+    if(ui->tabWidgets->currentIndex()!=2)
+        return;
+    bool isChecked=ui->rbutton->isChecked();
+    QStringList keyList;
+    for(auto iter=processes.begin();iter!=processes.end();++iter)
+    {
+        if(isChecked)
+        {
+            keyList<<iter.value()->name.c_str();
+        }
+        else
+        {
+            keyList<<QString("%1").arg(iter.key());
+        }
+    }
+    ui->lnEdQuery->setCompleter(new QCompleter(keyList));
 }
 
 mainWindow::~mainWindow()

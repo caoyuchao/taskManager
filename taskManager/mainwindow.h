@@ -32,6 +32,7 @@ private:
     cpuUseState* curCpuStat;
     QMap<pid_t,processInfo*> processes;
     pid_t pidToBeKilled;
+//    size_t sortColumnIndex;排序很坑,按照字符串字典序排
 //    bool isEverSelectTabRecord;
 private:
 
@@ -46,7 +47,7 @@ private:
     void updateCpuUseRate();
     void updateMemUseRate();
     void setTBWHeaders();
-    void headerSectionClicked(int index);
+//    void headerSectionClicked(int index);
     void insertARowIntoTable(const processInfo* const process,int rowsIndex);
     void removeAllRows();
     void updateProcessesInfo();
@@ -55,6 +56,7 @@ private:
     void createANewProcess();
     void killAProcess(pid_t pid);
     void endTask();
+    void updateCompletedList();
 protected:
     bool eventFilter(QObject* obj, QEvent* e);
 };
