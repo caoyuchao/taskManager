@@ -27,12 +27,14 @@ SOURCES += \
         main.cpp \
         mainwindow.cpp \
     sysinfo.cpp \
-    memory.cpp
+    memory.cpp \
+    process.cpp
 
 HEADERS += \
         mainwindow.h \
     sysinfo.h \
-    memory.h
+    memory.h \
+    process.h
 
 FORMS += \
         mainwindow.ui

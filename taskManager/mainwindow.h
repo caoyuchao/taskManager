@@ -5,7 +5,9 @@
 #include<qlabel.h>
 #include<QPushButton>
 #include<QTimer>
+#include<qevent.h>
 #include"sysinfo.h"
+#include"process.h"
 namespace Ui {
 class mainWindow;
 }
@@ -28,6 +30,11 @@ private:
     Ui::mainWindow *ui;
     cpuUseState* preCpuStat;
     cpuUseState* curCpuStat;
+    QMap<pid_t,processInfo*> processes;
+    pid_t pidToBeKilled;
+//    bool isEverSelectTabRecord;
+private:
+
 private:
     QLabel* getAGeneralLabel(int minw);
     QPushButton* getAGeneralButton(const QString& text);
@@ -38,6 +45,18 @@ private:
     void updateTime();
     void updateCpuUseRate();
     void updateMemUseRate();
+    void setTBWHeaders();
+    void headerSectionClicked(int index);
+    void insertARowIntoTable(const processInfo* const process,int rowsIndex);
+    void removeAllRows();
+    void updateProcessesInfo();
+    void queryProcessInfo();
+    void showProcessInfo(const processInfo* const process);
+    void createANewProcess();
+    void killAProcess(pid_t pid);
+    void endTask();
+protected:
+    bool eventFilter(QObject* obj, QEvent* e);
 };
 
 #endif // MAINWINDOW_H

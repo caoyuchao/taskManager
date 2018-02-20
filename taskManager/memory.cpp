@@ -26,8 +26,7 @@ size_t memUseState::getMemUnUsed()const
 void getMemUseState(memUseState * const curMem)
 {
     QFile in("/proc/meminfo");
-    in.open(QIODevice::ReadOnly);
-    if(in.isOpen())
+    if(in.open(QIODevice::ReadOnly))
     {
         QStringList data;
         QString lines="";

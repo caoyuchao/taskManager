@@ -53,11 +53,13 @@ OBJECTS_DIR   = ./
 SOURCES       = ../taskManager/main.cpp \
 		../taskManager/mainwindow.cpp \
 		../taskManager/sysinfo.cpp \
-		../taskManager/memory.cpp moc_mainwindow.cpp
+		../taskManager/memory.cpp \
+		../taskManager/process.cpp moc_mainwindow.cpp
 OBJECTS       = main.o \
 		mainwindow.o \
 		sysinfo.o \
 		memory.o \
+		process.o \
 		moc_mainwindow.o
 DIST          = /usr/qt/5.10.1/gcc_64/mkspecs/features/spec_pre.prf \
 		/usr/qt/5.10.1/gcc_64/mkspecs/common/unix.conf \
@@ -244,10 +246,12 @@ DIST          = /usr/qt/5.10.1/gcc_64/mkspecs/features/spec_pre.prf \
 		/usr/qt/5.10.1/gcc_64/mkspecs/features/lex.prf \
 		../taskManager/taskManager.pro ../taskManager/mainwindow.h \
 		../taskManager/sysinfo.h \
-		../taskManager/memory.h ../taskManager/main.cpp \
+		../taskManager/memory.h \
+		../taskManager/process.h ../taskManager/main.cpp \
 		../taskManager/mainwindow.cpp \
 		../taskManager/sysinfo.cpp \
-		../taskManager/memory.cpp
+		../taskManager/memory.cpp \
+		../taskManager/process.cpp
 QMAKE_TARGET  = taskManager
 DESTDIR       = 
 TARGET        = taskManager
@@ -649,8 +653,8 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents /usr/qt/5.10.1/gcc_64/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents ../taskManager/mainwindow.h ../taskManager/sysinfo.h ../taskManager/memory.h $(DISTDIR)/
-	$(COPY_FILE) --parents ../taskManager/main.cpp ../taskManager/mainwindow.cpp ../taskManager/sysinfo.cpp ../taskManager/memory.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents ../taskManager/mainwindow.h ../taskManager/sysinfo.h ../taskManager/memory.h ../taskManager/process.h $(DISTDIR)/
+	$(COPY_FILE) --parents ../taskManager/main.cpp ../taskManager/mainwindow.cpp ../taskManager/sysinfo.cpp ../taskManager/memory.cpp ../taskManager/process.cpp $(DISTDIR)/
 	$(COPY_FILE) --parents ../taskManager/mainwindow.ui $(DISTDIR)/
 
 
@@ -801,6 +805,7 @@ moc_mainwindow.cpp: /usr/qt/5.10.1/gcc_64/include/QtWidgets/QMainWindow \
 		/usr/qt/5.10.1/gcc_64/include/QtCore/qtimer.h \
 		/usr/qt/5.10.1/gcc_64/include/QtCore/qbasictimer.h \
 		../taskManager/sysinfo.h \
+		../taskManager/process.h \
 		../taskManager/mainwindow.h \
 		moc_predefs.h \
 		/usr/qt/5.10.1/gcc_64/bin/moc
@@ -943,6 +948,7 @@ main.o: ../taskManager/main.cpp ../taskManager/mainwindow.h \
 		/usr/qt/5.10.1/gcc_64/include/QtCore/qtimer.h \
 		/usr/qt/5.10.1/gcc_64/include/QtCore/qbasictimer.h \
 		../taskManager/sysinfo.h \
+		../taskManager/process.h \
 		/usr/qt/5.10.1/gcc_64/include/QtWidgets/QApplication \
 		/usr/qt/5.10.1/gcc_64/include/QtWidgets/qapplication.h \
 		/usr/qt/5.10.1/gcc_64/include/QtCore/qcoreapplication.h \
@@ -1068,6 +1074,7 @@ mainwindow.o: ../taskManager/mainwindow.cpp ../taskManager/mainwindow.h \
 		/usr/qt/5.10.1/gcc_64/include/QtCore/qtimer.h \
 		/usr/qt/5.10.1/gcc_64/include/QtCore/qbasictimer.h \
 		../taskManager/sysinfo.h \
+		../taskManager/process.h \
 		ui_mainwindow.h \
 		/usr/qt/5.10.1/gcc_64/include/QtCore/QVariant \
 		/usr/qt/5.10.1/gcc_64/include/QtWidgets/QAction \
@@ -1107,6 +1114,9 @@ mainwindow.o: ../taskManager/mainwindow.cpp ../taskManager/mainwindow.h \
 		/usr/qt/5.10.1/gcc_64/include/QtWidgets/QStatusBar \
 		/usr/qt/5.10.1/gcc_64/include/QtWidgets/qstatusbar.h \
 		/usr/qt/5.10.1/gcc_64/include/QtWidgets/QTabWidget \
+		/usr/qt/5.10.1/gcc_64/include/QtWidgets/QTableWidget \
+		/usr/qt/5.10.1/gcc_64/include/QtWidgets/qtablewidget.h \
+		/usr/qt/5.10.1/gcc_64/include/QtWidgets/qtableview.h \
 		/usr/qt/5.10.1/gcc_64/include/QtWidgets/QTextBrowser \
 		/usr/qt/5.10.1/gcc_64/include/QtWidgets/qtextbrowser.h \
 		/usr/qt/5.10.1/gcc_64/include/QtWidgets/qtextedit.h \
@@ -1118,7 +1128,8 @@ mainwindow.o: ../taskManager/mainwindow.cpp ../taskManager/mainwindow.h \
 		/usr/qt/5.10.1/gcc_64/include/QtWidgets/QWidget \
 		/usr/qt/5.10.1/gcc_64/include/QtCore/qdatetime.h \
 		/usr/qt/5.10.1/gcc_64/include/QtCore/QStringList \
-		/usr/qt/5.10.1/gcc_64/include/QtWidgets/QSpacerItem
+		/usr/qt/5.10.1/gcc_64/include/QtWidgets/QSpacerItem \
+		../taskManager/memory.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o mainwindow.o ../taskManager/mainwindow.cpp
 
 sysinfo.o: ../taskManager/sysinfo.cpp ../taskManager/sysinfo.h
@@ -1164,8 +1175,88 @@ memory.o: ../taskManager/memory.cpp ../taskManager/memory.h \
 		/usr/qt/5.10.1/gcc_64/include/QtCore/qhashfunctions.h \
 		/usr/qt/5.10.1/gcc_64/include/QtCore/qpair.h \
 		/usr/qt/5.10.1/gcc_64/include/QtCore/qbytearraylist.h \
-		/usr/qt/5.10.1/gcc_64/include/QtCore/qstringmatcher.h
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qstringmatcher.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qfile.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qfiledevice.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qiodevice.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qobject.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qobjectdefs.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qobjectdefs_impl.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qcoreevent.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qscopedpointer.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qmetatype.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qvarlengtharray.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qcontainerfwd.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qobject_impl.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o memory.o ../taskManager/memory.cpp
+
+process.o: ../taskManager/process.cpp ../taskManager/process.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qmap.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qiterator.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qglobal.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qconfig-bootstrapped.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qconfig.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qtcore-config.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qsystemdetection.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qprocessordetection.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qcompilerdetection.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qtypeinfo.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qsysinfo.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qlogging.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qflags.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qatomic.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qbasicatomic.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qatomic_bootstrap.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qgenericatomic.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qatomic_cxx11.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qatomic_msvc.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qglobalstatic.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qmutex.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qnumeric.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qversiontagging.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qlist.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qalgorithms.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qrefcount.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qarraydata.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qhashfunctions.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qstring.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qchar.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qbytearray.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qnamespace.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qstringliteral.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qstringalgorithms.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qstringview.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qstringbuilder.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qpair.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qbytearraylist.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qstringlist.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qregexp.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qstringmatcher.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qdebug.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qhash.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qtextstream.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qiodevice.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qobject.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qobjectdefs.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qobjectdefs_impl.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qcoreevent.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qscopedpointer.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qmetatype.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qvarlengtharray.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qcontainerfwd.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qobject_impl.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qlocale.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qvariant.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qshareddata.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qvector.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qpoint.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qset.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qcontiguouscache.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qsharedpointer.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qsharedpointer_impl.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qfile.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qfiledevice.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o process.o ../taskManager/process.cpp
 
 moc_mainwindow.o: moc_mainwindow.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_mainwindow.o moc_mainwindow.cpp
