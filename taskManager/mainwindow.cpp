@@ -38,11 +38,14 @@ mainWindow::mainWindow(QWidget *parent) :
     connect(ui->btNewPro,&QPushButton::clicked,this,&mainWindow::createANewProcess);
     //    connect(ui->tbwProInfo->horizontalHeader(),&QHeaderView::sectionClicked,this,&mainWindow::headerSectionClicked);
     connect(btEndTask,&QPushButton::clicked,this,&mainWindow::endTask);
+    connect(ui->rbutton,&QRadioButton::clicked,this,&mainWindow::updateCompletedList);
     //    connect(ui->tbwProInfo,&QTableWidget::clicked,[=](){isEverSelectTabRecord=true;});
     fillSystemInfo();
     updateTime();
     updateCpuUseRate();
     updateMemUseRate();
+    updateProcessesInfo();//要在setCompletedList之前
+    setCompletedList();
     setTBWHeaders();
     timer->start(1000);
     longTimer->start(5000);
@@ -50,7 +53,6 @@ mainWindow::mainWindow(QWidget *parent) :
 
 bool mainWindow::eventFilter(QObject* obj, QEvent* e)
 {
-    //Q_ASSERT(obj == ui->queryButton);//need Release
     if(ui->tabWidgets->currentIndex()!=2)
         return false;
     if (e->type() == QEvent::KeyPress)
@@ -203,12 +205,12 @@ void mainWindow::insertARowIntoTable(const processInfo* const process,int rowsIn
 
 }
 
-void mainWindow::removeAllRows()
-{
-    size_t rows = ui->tbwProInfo->rowCount();
-    for (size_t index = 0; index < rows; index++)
-        ui->tbwProInfo->removeRow(0);
-}
+//void mainWindow::removeAllRows()
+//{//频繁删除插入在高速刷新时效率不行
+//    size_t rows = ui->tbwProInfo->rowCount();
+//    for (size_t index = 0; index < rows; index++)
+//        ui->tbwProInfo->removeRow(0);
+//}
 
 void mainWindow::updateProcessesInfo()
 {
@@ -233,11 +235,11 @@ void mainWindow::updateProcessesInfo()
 
 void mainWindow::showProcessInfo(const processInfo * const process)
 {
-    ui->tbrDetails->setText(QString("进程名      ： %1").arg(process->name.c_str()));
-    ui->tbrDetails->append(QString("进程pid号   ： %1").arg(pidToBeKilled=process->pid));
-    ui->tbrDetails->append(QString("父进程pid号 ： %1").arg(process->ppid));
-    ui->tbrDetails->append(QString("进程占用内存： %1KB").arg(process->rss*getpagesize()/1024));
-    ui->tbrDetails->append(QString("进程优先级  ： %1").arg(process->pid));
+    ui->tbrDetails->setText(QString("进程名     ：  %1").arg(process->name.c_str()));
+    ui->tbrDetails->append(QString("进程pid号   ：  %1").arg(pidToBeKilled=process->pid));
+    ui->tbrDetails->append(QString("父进程pid号 ：  %1").arg(process->ppid));
+    ui->tbrDetails->append(QString("进程占用内存：  %1KB").arg(process->rss*getpagesize()/1024));
+    ui->tbrDetails->append(QString("进程优先级  ：  %1").arg(process->pid));
 }
 
 void mainWindow::queryProcessInfo()
@@ -303,10 +305,8 @@ void mainWindow::endTask()
     }
 }
 
-void mainWindow::updateCompletedList()
+void mainWindow::setCompletedList()
 {
-    if(ui->tabWidgets->currentIndex()!=2)
-        return;
     bool isChecked=ui->rbutton->isChecked();
     QStringList keyList;
     for(auto iter=processes.begin();iter!=processes.end();++iter)
@@ -321,6 +321,13 @@ void mainWindow::updateCompletedList()
         }
     }
     ui->lnEdQuery->setCompleter(new QCompleter(keyList));
+}
+
+void mainWindow::updateCompletedList()
+{
+    if(ui->tabWidgets->currentIndex()!=2)
+        return;
+    setCompletedList();
 }
 
 mainWindow::~mainWindow()

@@ -49,7 +49,7 @@ private:
     void setTBWHeaders();
 //    void headerSectionClicked(int index);
     void insertARowIntoTable(const processInfo* const process,int rowsIndex);
-    void removeAllRows();
+//    void removeAllRows();
     void updateProcessesInfo();
     void queryProcessInfo();
     void showProcessInfo(const processInfo* const process);
@@ -57,6 +57,7 @@ private:
     void killAProcess(pid_t pid);
     void endTask();
     void updateCompletedList();
+    void setCompletedList();
 protected:
     bool eventFilter(QObject* obj, QEvent* e);
 };
