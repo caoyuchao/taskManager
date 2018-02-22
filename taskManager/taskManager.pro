@@ -28,13 +28,19 @@ SOURCES += \
         mainwindow.cpp \
     sysinfo.cpp \
     memory.cpp \
-    process.cpp
+    process.cpp \
+    shutdownwindow.cpp
 
 HEADERS += \
         mainwindow.h \
     sysinfo.h \
     memory.h \
-    process.h
+    process.h \
+    shutdownwindow.h
 
 FORMS += \
-        mainwindow.ui
+        mainwindow.ui \
+    shutdownwindow.ui
+
+RESOURCES += \
+    resources.qrc

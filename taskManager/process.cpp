@@ -6,7 +6,6 @@
 #include<qstringlist.h>
 #include<qfile.h>
 
-#include<iostream>
 //struct processInfo
 //{
 //    std::string name;
@@ -24,18 +23,17 @@ void readProcessInfo(processInfo* const proInfo,const char* pid)
     QFile in(QString("/proc/%1/stat").arg(pid));
     if(in.open(QIODevice::ReadOnly))
     {
-        QStringList data=QString(in.readLine()).split(' ');
-        QString tmp;
-        tmp=data.at(0);
-        proInfo->pid=tmp.toShort();
-        tmp=data.at(1);
-        proInfo->name=tmp.toStdString().substr(1,tmp.size()-2);
-        tmp=data.at(3);
-        proInfo->ppid=tmp.toShort();
-        tmp=data.at(18);
-        proInfo->priority=tmp.toShort();
-        tmp=data.at(23);
-        proInfo->rss=tmp.toUInt();
+        QString content=QString(in.readLine());
+        QString dataTail=content.mid(content.lastIndexOf(')')+2);
+        QStringList data=dataTail.split(' ');
+
+        proInfo->pid=content.split(' ').at(0).toShort();
+        int startIndex=content.indexOf('(')+1;
+        proInfo->name=content.mid(startIndex,content.lastIndexOf(')')-startIndex).toStdString();
+
+        proInfo->ppid=data.at(1).toShort();
+        proInfo->priority=data.at(16).toShort();
+        proInfo->rss=data.at(21).toUInt();
         in.close();
     }
 }

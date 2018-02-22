@@ -54,13 +54,19 @@ SOURCES       = ../taskManager/main.cpp \
 		../taskManager/mainwindow.cpp \
 		../taskManager/sysinfo.cpp \
 		../taskManager/memory.cpp \
-		../taskManager/process.cpp moc_mainwindow.cpp
+		../taskManager/process.cpp \
+		../taskManager/shutdownwindow.cpp qrc_resources.cpp \
+		moc_mainwindow.cpp \
+		moc_shutdownwindow.cpp
 OBJECTS       = main.o \
 		mainwindow.o \
 		sysinfo.o \
 		memory.o \
 		process.o \
-		moc_mainwindow.o
+		shutdownwindow.o \
+		qrc_resources.o \
+		moc_mainwindow.o \
+		moc_shutdownwindow.o
 DIST          = /usr/qt/5.10.1/gcc_64/mkspecs/features/spec_pre.prf \
 		/usr/qt/5.10.1/gcc_64/mkspecs/common/unix.conf \
 		/usr/qt/5.10.1/gcc_64/mkspecs/common/linux.conf \
@@ -247,11 +253,13 @@ DIST          = /usr/qt/5.10.1/gcc_64/mkspecs/features/spec_pre.prf \
 		../taskManager/taskManager.pro ../taskManager/mainwindow.h \
 		../taskManager/sysinfo.h \
 		../taskManager/memory.h \
-		../taskManager/process.h ../taskManager/main.cpp \
+		../taskManager/process.h \
+		../taskManager/shutdownwindow.h ../taskManager/main.cpp \
 		../taskManager/mainwindow.cpp \
 		../taskManager/sysinfo.cpp \
 		../taskManager/memory.cpp \
-		../taskManager/process.cpp
+		../taskManager/process.cpp \
+		../taskManager/shutdownwindow.cpp
 QMAKE_TARGET  = taskManager
 DESTDIR       = 
 TARGET        = taskManager
@@ -260,7 +268,7 @@ TARGET        = taskManager
 first: all
 ####### Build rules
 
-$(TARGET): ui_mainwindow.h $(OBJECTS)  
+$(TARGET): ui_mainwindow.h ui_shutdownwindow.h $(OBJECTS)  
 	$(LINK) $(LFLAGS) -o $(TARGET) $(OBJECTS) $(OBJCOMP) $(LIBS)
 
 Makefile: ../taskManager/taskManager.pro /usr/qt/5.10.1/gcc_64/mkspecs/linux-g++/qmake.conf /usr/qt/5.10.1/gcc_64/mkspecs/features/spec_pre.prf \
@@ -447,6 +455,7 @@ Makefile: ../taskManager/taskManager.pro /usr/qt/5.10.1/gcc_64/mkspecs/linux-g++
 		/usr/qt/5.10.1/gcc_64/mkspecs/features/yacc.prf \
 		/usr/qt/5.10.1/gcc_64/mkspecs/features/lex.prf \
 		../taskManager/taskManager.pro \
+		../taskManager/resources.qrc \
 		/usr/qt/5.10.1/gcc_64/lib/libQt5Widgets.prl \
 		/usr/qt/5.10.1/gcc_64/lib/libQt5Gui.prl \
 		/usr/qt/5.10.1/gcc_64/lib/libQt5Core.prl
@@ -635,6 +644,7 @@ Makefile: ../taskManager/taskManager.pro /usr/qt/5.10.1/gcc_64/mkspecs/linux-g++
 /usr/qt/5.10.1/gcc_64/mkspecs/features/yacc.prf:
 /usr/qt/5.10.1/gcc_64/mkspecs/features/lex.prf:
 ../taskManager/taskManager.pro:
+../taskManager/resources.qrc:
 /usr/qt/5.10.1/gcc_64/lib/libQt5Widgets.prl:
 /usr/qt/5.10.1/gcc_64/lib/libQt5Gui.prl:
 /usr/qt/5.10.1/gcc_64/lib/libQt5Core.prl:
@@ -652,10 +662,11 @@ dist: distdir FORCE
 distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
+	$(COPY_FILE) --parents ../taskManager/resources.qrc $(DISTDIR)/
 	$(COPY_FILE) --parents /usr/qt/5.10.1/gcc_64/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents ../taskManager/mainwindow.h ../taskManager/sysinfo.h ../taskManager/memory.h ../taskManager/process.h $(DISTDIR)/
-	$(COPY_FILE) --parents ../taskManager/main.cpp ../taskManager/mainwindow.cpp ../taskManager/sysinfo.cpp ../taskManager/memory.cpp ../taskManager/process.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents ../taskManager/mainwindow.ui $(DISTDIR)/
+	$(COPY_FILE) --parents ../taskManager/mainwindow.h ../taskManager/sysinfo.h ../taskManager/memory.h ../taskManager/process.h ../taskManager/shutdownwindow.h $(DISTDIR)/
+	$(COPY_FILE) --parents ../taskManager/main.cpp ../taskManager/mainwindow.cpp ../taskManager/sysinfo.cpp ../taskManager/memory.cpp ../taskManager/process.cpp ../taskManager/shutdownwindow.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents ../taskManager/mainwindow.ui ../taskManager/shutdownwindow.ui $(DISTDIR)/
 
 
 clean: compiler_clean 
@@ -679,17 +690,27 @@ check: first
 
 benchmark: first
 
-compiler_rcc_make_all:
+compiler_rcc_make_all: qrc_resources.cpp
 compiler_rcc_clean:
+	-$(DEL_FILE) qrc_resources.cpp
+qrc_resources.cpp: ../taskManager/resources.qrc \
+		/usr/qt/5.10.1/gcc_64/bin/rcc \
+		../taskManager/icons/ubuntu-logo-icon.png \
+		../taskManager/icons/system-shutdown-panel.svg \
+		../taskManager/icons/reboot.png \
+		../taskManager/icons/system-restart-panel.svg \
+		../taskManager/icons/system-shutdown-panel-restart.svg
+	/usr/qt/5.10.1/gcc_64/bin/rcc -name resources ../taskManager/resources.qrc -o qrc_resources.cpp
+
 compiler_moc_predefs_make_all: moc_predefs.h
 compiler_moc_predefs_clean:
 	-$(DEL_FILE) moc_predefs.h
 moc_predefs.h: /usr/qt/5.10.1/gcc_64/mkspecs/features/data/dummy.cpp
 	g++ -pipe -g -Wall -W -dM -E -o moc_predefs.h /usr/qt/5.10.1/gcc_64/mkspecs/features/data/dummy.cpp
 
-compiler_moc_header_make_all: moc_mainwindow.cpp
+compiler_moc_header_make_all: moc_mainwindow.cpp moc_shutdownwindow.cpp
 compiler_moc_header_clean:
-	-$(DEL_FILE) moc_mainwindow.cpp
+	-$(DEL_FILE) moc_mainwindow.cpp moc_shutdownwindow.cpp
 moc_mainwindow.cpp: /usr/qt/5.10.1/gcc_64/include/QtWidgets/QMainWindow \
 		/usr/qt/5.10.1/gcc_64/include/QtWidgets/qmainwindow.h \
 		/usr/qt/5.10.1/gcc_64/include/QtWidgets/qtwidgetsglobal.h \
@@ -798,12 +819,11 @@ moc_mainwindow.cpp: /usr/qt/5.10.1/gcc_64/include/QtWidgets/QMainWindow \
 		/usr/qt/5.10.1/gcc_64/include/QtGui/qicon.h \
 		/usr/qt/5.10.1/gcc_64/include/QtWidgets/qlabel.h \
 		/usr/qt/5.10.1/gcc_64/include/QtWidgets/qframe.h \
-		/usr/qt/5.10.1/gcc_64/include/QtWidgets/QPushButton \
 		/usr/qt/5.10.1/gcc_64/include/QtWidgets/qpushbutton.h \
 		/usr/qt/5.10.1/gcc_64/include/QtWidgets/qabstractbutton.h \
-		/usr/qt/5.10.1/gcc_64/include/QtCore/QTimer \
 		/usr/qt/5.10.1/gcc_64/include/QtCore/qtimer.h \
 		/usr/qt/5.10.1/gcc_64/include/QtCore/qbasictimer.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qprocess.h \
 		../taskManager/sysinfo.h \
 		../taskManager/process.h \
 		../taskManager/mainwindow.h \
@@ -811,16 +831,129 @@ moc_mainwindow.cpp: /usr/qt/5.10.1/gcc_64/include/QtWidgets/QMainWindow \
 		/usr/qt/5.10.1/gcc_64/bin/moc
 	/usr/qt/5.10.1/gcc_64/bin/moc $(DEFINES) --include ./moc_predefs.h -I/usr/qt/5.10.1/gcc_64/mkspecs/linux-g++ -I/home/caoyuchao/os_curriculum/taskmanager/taskManager -I/usr/qt/5.10.1/gcc_64/include -I/usr/qt/5.10.1/gcc_64/include/QtWidgets -I/usr/qt/5.10.1/gcc_64/include/QtGui -I/usr/qt/5.10.1/gcc_64/include/QtCore -I. -I/usr/include/c++/7 -I/usr/include/x86_64-linux-gnu/c++/7 -I/usr/include/c++/7/backward -I/usr/lib/gcc/x86_64-linux-gnu/7/include -I/usr/local/include -I/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed -I/usr/include/x86_64-linux-gnu -I/usr/include ../taskManager/mainwindow.h -o moc_mainwindow.cpp
 
+moc_shutdownwindow.cpp: /usr/qt/5.10.1/gcc_64/include/QtWidgets/QDialog \
+		/usr/qt/5.10.1/gcc_64/include/QtWidgets/qdialog.h \
+		/usr/qt/5.10.1/gcc_64/include/QtWidgets/qtwidgetsglobal.h \
+		/usr/qt/5.10.1/gcc_64/include/QtGui/qtguiglobal.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qglobal.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qconfig-bootstrapped.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qconfig.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qtcore-config.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qsystemdetection.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qprocessordetection.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qcompilerdetection.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qtypeinfo.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qsysinfo.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qlogging.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qflags.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qatomic.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qbasicatomic.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qatomic_bootstrap.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qgenericatomic.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qatomic_cxx11.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qatomic_msvc.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qglobalstatic.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qmutex.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qnumeric.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qversiontagging.h \
+		/usr/qt/5.10.1/gcc_64/include/QtGui/qtgui-config.h \
+		/usr/qt/5.10.1/gcc_64/include/QtWidgets/qtwidgets-config.h \
+		/usr/qt/5.10.1/gcc_64/include/QtWidgets/qwidget.h \
+		/usr/qt/5.10.1/gcc_64/include/QtGui/qwindowdefs.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qobjectdefs.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qnamespace.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qobjectdefs_impl.h \
+		/usr/qt/5.10.1/gcc_64/include/QtGui/qwindowdefs_win.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qobject.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qstring.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qchar.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qbytearray.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qrefcount.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qarraydata.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qstringliteral.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qstringalgorithms.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qstringview.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qstringbuilder.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qlist.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qalgorithms.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qiterator.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qhashfunctions.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qpair.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qbytearraylist.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qstringlist.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qregexp.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qstringmatcher.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qcoreevent.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qscopedpointer.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qmetatype.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qvarlengtharray.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qcontainerfwd.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qobject_impl.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qmargins.h \
+		/usr/qt/5.10.1/gcc_64/include/QtGui/qpaintdevice.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qrect.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qsize.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qpoint.h \
+		/usr/qt/5.10.1/gcc_64/include/QtGui/qpalette.h \
+		/usr/qt/5.10.1/gcc_64/include/QtGui/qcolor.h \
+		/usr/qt/5.10.1/gcc_64/include/QtGui/qrgb.h \
+		/usr/qt/5.10.1/gcc_64/include/QtGui/qrgba64.h \
+		/usr/qt/5.10.1/gcc_64/include/QtGui/qbrush.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qvector.h \
+		/usr/qt/5.10.1/gcc_64/include/QtGui/qmatrix.h \
+		/usr/qt/5.10.1/gcc_64/include/QtGui/qpolygon.h \
+		/usr/qt/5.10.1/gcc_64/include/QtGui/qregion.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qdatastream.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qiodevice.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qline.h \
+		/usr/qt/5.10.1/gcc_64/include/QtGui/qtransform.h \
+		/usr/qt/5.10.1/gcc_64/include/QtGui/qpainterpath.h \
+		/usr/qt/5.10.1/gcc_64/include/QtGui/qimage.h \
+		/usr/qt/5.10.1/gcc_64/include/QtGui/qpixelformat.h \
+		/usr/qt/5.10.1/gcc_64/include/QtGui/qpixmap.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qsharedpointer.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qshareddata.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qhash.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qsharedpointer_impl.h \
+		/usr/qt/5.10.1/gcc_64/include/QtGui/qfont.h \
+		/usr/qt/5.10.1/gcc_64/include/QtGui/qfontmetrics.h \
+		/usr/qt/5.10.1/gcc_64/include/QtGui/qfontinfo.h \
+		/usr/qt/5.10.1/gcc_64/include/QtWidgets/qsizepolicy.h \
+		/usr/qt/5.10.1/gcc_64/include/QtGui/qcursor.h \
+		/usr/qt/5.10.1/gcc_64/include/QtGui/qkeysequence.h \
+		/usr/qt/5.10.1/gcc_64/include/QtGui/qevent.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qvariant.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qmap.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qdebug.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qtextstream.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qlocale.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qset.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qcontiguouscache.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qurl.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qurlquery.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qfile.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qfiledevice.h \
+		/usr/qt/5.10.1/gcc_64/include/QtGui/qvector2d.h \
+		/usr/qt/5.10.1/gcc_64/include/QtGui/qtouchdevice.h \
+		../taskManager/shutdownwindow.h \
+		moc_predefs.h \
+		/usr/qt/5.10.1/gcc_64/bin/moc
+	/usr/qt/5.10.1/gcc_64/bin/moc $(DEFINES) --include ./moc_predefs.h -I/usr/qt/5.10.1/gcc_64/mkspecs/linux-g++ -I/home/caoyuchao/os_curriculum/taskmanager/taskManager -I/usr/qt/5.10.1/gcc_64/include -I/usr/qt/5.10.1/gcc_64/include/QtWidgets -I/usr/qt/5.10.1/gcc_64/include/QtGui -I/usr/qt/5.10.1/gcc_64/include/QtCore -I. -I/usr/include/c++/7 -I/usr/include/x86_64-linux-gnu/c++/7 -I/usr/include/c++/7/backward -I/usr/lib/gcc/x86_64-linux-gnu/7/include -I/usr/local/include -I/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed -I/usr/include/x86_64-linux-gnu -I/usr/include ../taskManager/shutdownwindow.h -o moc_shutdownwindow.cpp
+
 compiler_moc_objc_header_make_all:
 compiler_moc_objc_header_clean:
 compiler_moc_source_make_all:
 compiler_moc_source_clean:
-compiler_uic_make_all: ui_mainwindow.h
+compiler_uic_make_all: ui_mainwindow.h ui_shutdownwindow.h
 compiler_uic_clean:
-	-$(DEL_FILE) ui_mainwindow.h
+	-$(DEL_FILE) ui_mainwindow.h ui_shutdownwindow.h
 ui_mainwindow.h: ../taskManager/mainwindow.ui \
 		/usr/qt/5.10.1/gcc_64/bin/uic
 	/usr/qt/5.10.1/gcc_64/bin/uic ../taskManager/mainwindow.ui -o ui_mainwindow.h
+
+ui_shutdownwindow.h: ../taskManager/shutdownwindow.ui \
+		/usr/qt/5.10.1/gcc_64/bin/uic
+	/usr/qt/5.10.1/gcc_64/bin/uic ../taskManager/shutdownwindow.ui -o ui_shutdownwindow.h
 
 compiler_yacc_decl_make_all:
 compiler_yacc_decl_clean:
@@ -828,7 +961,7 @@ compiler_yacc_impl_make_all:
 compiler_yacc_impl_clean:
 compiler_lex_make_all:
 compiler_lex_clean:
-compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean compiler_uic_clean 
+compiler_clean: compiler_rcc_clean compiler_moc_predefs_clean compiler_moc_header_clean compiler_uic_clean 
 
 ####### Compile
 
@@ -941,12 +1074,11 @@ main.o: ../taskManager/main.cpp ../taskManager/mainwindow.h \
 		/usr/qt/5.10.1/gcc_64/include/QtGui/qicon.h \
 		/usr/qt/5.10.1/gcc_64/include/QtWidgets/qlabel.h \
 		/usr/qt/5.10.1/gcc_64/include/QtWidgets/qframe.h \
-		/usr/qt/5.10.1/gcc_64/include/QtWidgets/QPushButton \
 		/usr/qt/5.10.1/gcc_64/include/QtWidgets/qpushbutton.h \
 		/usr/qt/5.10.1/gcc_64/include/QtWidgets/qabstractbutton.h \
-		/usr/qt/5.10.1/gcc_64/include/QtCore/QTimer \
 		/usr/qt/5.10.1/gcc_64/include/QtCore/qtimer.h \
 		/usr/qt/5.10.1/gcc_64/include/QtCore/qbasictimer.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qprocess.h \
 		../taskManager/sysinfo.h \
 		../taskManager/process.h \
 		/usr/qt/5.10.1/gcc_64/include/QtWidgets/QApplication \
@@ -1067,12 +1199,11 @@ mainwindow.o: ../taskManager/mainwindow.cpp ../taskManager/mainwindow.h \
 		/usr/qt/5.10.1/gcc_64/include/QtGui/qicon.h \
 		/usr/qt/5.10.1/gcc_64/include/QtWidgets/qlabel.h \
 		/usr/qt/5.10.1/gcc_64/include/QtWidgets/qframe.h \
-		/usr/qt/5.10.1/gcc_64/include/QtWidgets/QPushButton \
 		/usr/qt/5.10.1/gcc_64/include/QtWidgets/qpushbutton.h \
 		/usr/qt/5.10.1/gcc_64/include/QtWidgets/qabstractbutton.h \
-		/usr/qt/5.10.1/gcc_64/include/QtCore/QTimer \
 		/usr/qt/5.10.1/gcc_64/include/QtCore/qtimer.h \
 		/usr/qt/5.10.1/gcc_64/include/QtCore/qbasictimer.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qprocess.h \
 		../taskManager/sysinfo.h \
 		../taskManager/process.h \
 		ui_mainwindow.h \
@@ -1111,6 +1242,15 @@ mainwindow.o: ../taskManager/mainwindow.cpp ../taskManager/mainwindow.h \
 		/usr/qt/5.10.1/gcc_64/include/QtWidgets/qtabbar.h \
 		/usr/qt/5.10.1/gcc_64/include/QtWidgets/qrubberband.h \
 		/usr/qt/5.10.1/gcc_64/include/QtWidgets/QLabel \
+		/usr/qt/5.10.1/gcc_64/include/QtWidgets/QLineEdit \
+		/usr/qt/5.10.1/gcc_64/include/QtWidgets/qlineedit.h \
+		/usr/qt/5.10.1/gcc_64/include/QtGui/qtextcursor.h \
+		/usr/qt/5.10.1/gcc_64/include/QtGui/qtextformat.h \
+		/usr/qt/5.10.1/gcc_64/include/QtGui/qpen.h \
+		/usr/qt/5.10.1/gcc_64/include/QtGui/qtextoption.h \
+		/usr/qt/5.10.1/gcc_64/include/QtWidgets/QPushButton \
+		/usr/qt/5.10.1/gcc_64/include/QtWidgets/QRadioButton \
+		/usr/qt/5.10.1/gcc_64/include/QtWidgets/qradiobutton.h \
 		/usr/qt/5.10.1/gcc_64/include/QtWidgets/QStatusBar \
 		/usr/qt/5.10.1/gcc_64/include/QtWidgets/qstatusbar.h \
 		/usr/qt/5.10.1/gcc_64/include/QtWidgets/QTabWidget \
@@ -1121,15 +1261,17 @@ mainwindow.o: ../taskManager/mainwindow.cpp ../taskManager/mainwindow.h \
 		/usr/qt/5.10.1/gcc_64/include/QtWidgets/qtextbrowser.h \
 		/usr/qt/5.10.1/gcc_64/include/QtWidgets/qtextedit.h \
 		/usr/qt/5.10.1/gcc_64/include/QtGui/qtextdocument.h \
-		/usr/qt/5.10.1/gcc_64/include/QtGui/qtextoption.h \
-		/usr/qt/5.10.1/gcc_64/include/QtGui/qtextcursor.h \
-		/usr/qt/5.10.1/gcc_64/include/QtGui/qtextformat.h \
-		/usr/qt/5.10.1/gcc_64/include/QtGui/qpen.h \
 		/usr/qt/5.10.1/gcc_64/include/QtWidgets/QWidget \
 		/usr/qt/5.10.1/gcc_64/include/QtCore/qdatetime.h \
 		/usr/qt/5.10.1/gcc_64/include/QtCore/QStringList \
 		/usr/qt/5.10.1/gcc_64/include/QtWidgets/QSpacerItem \
-		../taskManager/memory.h
+		/usr/qt/5.10.1/gcc_64/include/QtWidgets/qscrollbar.h \
+		../taskManager/memory.h \
+		/usr/qt/5.10.1/gcc_64/include/QtWidgets/qcompleter.h \
+		/usr/qt/5.10.1/gcc_64/include/QtWidgets/qmessagebox.h \
+		/usr/qt/5.10.1/gcc_64/include/QtWidgets/qdialog.h \
+		../taskManager/shutdownwindow.h \
+		/usr/qt/5.10.1/gcc_64/include/QtWidgets/QDialog
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o mainwindow.o ../taskManager/mainwindow.cpp
 
 sysinfo.o: ../taskManager/sysinfo.cpp ../taskManager/sysinfo.h
@@ -1258,8 +1400,157 @@ process.o: ../taskManager/process.cpp ../taskManager/process.h \
 		/usr/qt/5.10.1/gcc_64/include/QtCore/qfiledevice.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o process.o ../taskManager/process.cpp
 
+shutdownwindow.o: ../taskManager/shutdownwindow.cpp ../taskManager/shutdownwindow.h \
+		/usr/qt/5.10.1/gcc_64/include/QtWidgets/QDialog \
+		/usr/qt/5.10.1/gcc_64/include/QtWidgets/qdialog.h \
+		/usr/qt/5.10.1/gcc_64/include/QtWidgets/qtwidgetsglobal.h \
+		/usr/qt/5.10.1/gcc_64/include/QtGui/qtguiglobal.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qglobal.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qconfig-bootstrapped.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qconfig.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qtcore-config.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qsystemdetection.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qprocessordetection.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qcompilerdetection.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qtypeinfo.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qsysinfo.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qlogging.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qflags.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qatomic.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qbasicatomic.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qatomic_bootstrap.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qgenericatomic.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qatomic_cxx11.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qatomic_msvc.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qglobalstatic.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qmutex.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qnumeric.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qversiontagging.h \
+		/usr/qt/5.10.1/gcc_64/include/QtGui/qtgui-config.h \
+		/usr/qt/5.10.1/gcc_64/include/QtWidgets/qtwidgets-config.h \
+		/usr/qt/5.10.1/gcc_64/include/QtWidgets/qwidget.h \
+		/usr/qt/5.10.1/gcc_64/include/QtGui/qwindowdefs.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qobjectdefs.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qnamespace.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qobjectdefs_impl.h \
+		/usr/qt/5.10.1/gcc_64/include/QtGui/qwindowdefs_win.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qobject.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qstring.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qchar.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qbytearray.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qrefcount.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qarraydata.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qstringliteral.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qstringalgorithms.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qstringview.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qstringbuilder.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qlist.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qalgorithms.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qiterator.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qhashfunctions.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qpair.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qbytearraylist.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qstringlist.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qregexp.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qstringmatcher.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qcoreevent.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qscopedpointer.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qmetatype.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qvarlengtharray.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qcontainerfwd.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qobject_impl.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qmargins.h \
+		/usr/qt/5.10.1/gcc_64/include/QtGui/qpaintdevice.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qrect.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qsize.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qpoint.h \
+		/usr/qt/5.10.1/gcc_64/include/QtGui/qpalette.h \
+		/usr/qt/5.10.1/gcc_64/include/QtGui/qcolor.h \
+		/usr/qt/5.10.1/gcc_64/include/QtGui/qrgb.h \
+		/usr/qt/5.10.1/gcc_64/include/QtGui/qrgba64.h \
+		/usr/qt/5.10.1/gcc_64/include/QtGui/qbrush.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qvector.h \
+		/usr/qt/5.10.1/gcc_64/include/QtGui/qmatrix.h \
+		/usr/qt/5.10.1/gcc_64/include/QtGui/qpolygon.h \
+		/usr/qt/5.10.1/gcc_64/include/QtGui/qregion.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qdatastream.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qiodevice.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qline.h \
+		/usr/qt/5.10.1/gcc_64/include/QtGui/qtransform.h \
+		/usr/qt/5.10.1/gcc_64/include/QtGui/qpainterpath.h \
+		/usr/qt/5.10.1/gcc_64/include/QtGui/qimage.h \
+		/usr/qt/5.10.1/gcc_64/include/QtGui/qpixelformat.h \
+		/usr/qt/5.10.1/gcc_64/include/QtGui/qpixmap.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qsharedpointer.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qshareddata.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qhash.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qsharedpointer_impl.h \
+		/usr/qt/5.10.1/gcc_64/include/QtGui/qfont.h \
+		/usr/qt/5.10.1/gcc_64/include/QtGui/qfontmetrics.h \
+		/usr/qt/5.10.1/gcc_64/include/QtGui/qfontinfo.h \
+		/usr/qt/5.10.1/gcc_64/include/QtWidgets/qsizepolicy.h \
+		/usr/qt/5.10.1/gcc_64/include/QtGui/qcursor.h \
+		/usr/qt/5.10.1/gcc_64/include/QtGui/qkeysequence.h \
+		/usr/qt/5.10.1/gcc_64/include/QtGui/qevent.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qvariant.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qmap.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qdebug.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qtextstream.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qlocale.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qset.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qcontiguouscache.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qurl.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qurlquery.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qfile.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qfiledevice.h \
+		/usr/qt/5.10.1/gcc_64/include/QtGui/qvector2d.h \
+		/usr/qt/5.10.1/gcc_64/include/QtGui/qtouchdevice.h \
+		ui_shutdownwindow.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/QVariant \
+		/usr/qt/5.10.1/gcc_64/include/QtWidgets/QAction \
+		/usr/qt/5.10.1/gcc_64/include/QtWidgets/qaction.h \
+		/usr/qt/5.10.1/gcc_64/include/QtGui/qicon.h \
+		/usr/qt/5.10.1/gcc_64/include/QtWidgets/qactiongroup.h \
+		/usr/qt/5.10.1/gcc_64/include/QtWidgets/QApplication \
+		/usr/qt/5.10.1/gcc_64/include/QtWidgets/qapplication.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qcoreapplication.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qeventloop.h \
+		/usr/qt/5.10.1/gcc_64/include/QtWidgets/qdesktopwidget.h \
+		/usr/qt/5.10.1/gcc_64/include/QtGui/qguiapplication.h \
+		/usr/qt/5.10.1/gcc_64/include/QtGui/qinputmethod.h \
+		/usr/qt/5.10.1/gcc_64/include/QtWidgets/QButtonGroup \
+		/usr/qt/5.10.1/gcc_64/include/QtWidgets/qbuttongroup.h \
+		/usr/qt/5.10.1/gcc_64/include/QtWidgets/QHeaderView \
+		/usr/qt/5.10.1/gcc_64/include/QtWidgets/qheaderview.h \
+		/usr/qt/5.10.1/gcc_64/include/QtWidgets/qabstractitemview.h \
+		/usr/qt/5.10.1/gcc_64/include/QtWidgets/qabstractscrollarea.h \
+		/usr/qt/5.10.1/gcc_64/include/QtWidgets/qframe.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qabstractitemmodel.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qitemselectionmodel.h \
+		/usr/qt/5.10.1/gcc_64/include/QtWidgets/qabstractitemdelegate.h \
+		/usr/qt/5.10.1/gcc_64/include/QtWidgets/qstyleoption.h \
+		/usr/qt/5.10.1/gcc_64/include/QtWidgets/qabstractspinbox.h \
+		/usr/qt/5.10.1/gcc_64/include/QtGui/qvalidator.h \
+		/usr/qt/5.10.1/gcc_64/include/QtCore/qregularexpression.h \
+		/usr/qt/5.10.1/gcc_64/include/QtWidgets/qslider.h \
+		/usr/qt/5.10.1/gcc_64/include/QtWidgets/qabstractslider.h \
+		/usr/qt/5.10.1/gcc_64/include/QtWidgets/qstyle.h \
+		/usr/qt/5.10.1/gcc_64/include/QtWidgets/qtabbar.h \
+		/usr/qt/5.10.1/gcc_64/include/QtWidgets/qtabwidget.h \
+		/usr/qt/5.10.1/gcc_64/include/QtWidgets/qrubberband.h \
+		/usr/qt/5.10.1/gcc_64/include/QtWidgets/QPushButton \
+		/usr/qt/5.10.1/gcc_64/include/QtWidgets/qpushbutton.h \
+		/usr/qt/5.10.1/gcc_64/include/QtWidgets/qabstractbutton.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o shutdownwindow.o ../taskManager/shutdownwindow.cpp
+
+qrc_resources.o: qrc_resources.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o qrc_resources.o qrc_resources.cpp
+
 moc_mainwindow.o: moc_mainwindow.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_mainwindow.o moc_mainwindow.cpp
+
+moc_shutdownwindow.o: moc_shutdownwindow.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_shutdownwindow.o moc_shutdownwindow.cpp
 
 ####### Install
 

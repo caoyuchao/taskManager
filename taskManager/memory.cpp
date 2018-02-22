@@ -44,17 +44,12 @@ void getMemUseState(memUseState * const curMem)
             pos+=regExp.matchedLength();
         }
 
-        QString tmp;
         if(data.size()==linesToRead)
         {
-            tmp=data.at(0);
-            curMem->memTotal=tmp.toUInt();
-            tmp=data.at(1);
-            curMem->memFree=tmp.toUInt();
-            tmp=data.at(3);
-            curMem->buffers=tmp.toUInt();
-            tmp=data.at(4);
-            curMem->cached=tmp.toUInt();
+            curMem->memTotal=data.at(0).toUInt();
+            curMem->memFree=data.at(1).toUInt();
+            curMem->buffers=data.at(3).toUInt();
+            curMem->cached=data.at(4).toUInt();
         }
         in.close();
     }

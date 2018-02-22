@@ -3,9 +3,12 @@
 
 #include <QMainWindow>
 #include<qlabel.h>
-#include<QPushButton>
-#include<QTimer>
+#include<qpushbutton.h>
+#include<qtimer.h>
 #include<qevent.h>
+#include<qprocess.h>
+#include<qlist.h>
+#include<qpixmap.h>
 #include"sysinfo.h"
 #include"process.h"
 namespace Ui {
@@ -19,6 +22,8 @@ class mainWindow : public QMainWindow
 public:
     explicit mainWindow(QWidget *parent = 0);
     ~mainWindow();
+private:
+    const int numOfPoints = 120;
 
 private:
     QLabel* lbCurTime;
@@ -27,14 +32,18 @@ private:
     QPushButton* btShutdown;
     QPushButton* btEndTask;
     QTimer* timer;
+    QProcess* process;
     Ui::mainWindow *ui;
     cpuUseState* preCpuStat;
     cpuUseState* curCpuStat;
     QMap<pid_t,processInfo*> processes;
     pid_t pidToBeKilled;
-//    size_t sortColumnIndex;排序很坑,按照字符串字典序排
-//    bool isEverSelectTabRecord;
-private:
+    bool isEverTabRecordClicked;
+    double curCpuRate;
+    double curMemRate;
+    QList<double> cpuPointsY;
+    QList<double> memPointsY;
+    //    size_t sortColumnIndex;排序很坑,按照字符串字典序排
 
 private:
     QLabel* getAGeneralLabel(int minw);
@@ -47,9 +56,8 @@ private:
     void updateCpuUseRate();
     void updateMemUseRate();
     void setTBWHeaders();
-//    void headerSectionClicked(int index);
+    //    void headerSectionClicked(int index);
     void insertARowIntoTable(const processInfo* const process,int rowsIndex);
-//    void removeAllRows();
     void updateProcessesInfo();
     void queryProcessInfo();
     void showProcessInfo(const processInfo* const process);
@@ -58,8 +66,19 @@ private:
     void endTask();
     void updateCompletedList();
     void setCompletedList();
+    void processTabClicked(int index);
+    void processShutdown();
+    void drawBenchmark(QPixmap* const pix,const QList<double>& pointsY);
+    void updateCpuHisLine();
+    void updateMemHisLine();
+    void initPointsY();
+    void getCpuPointsY();
+    void getMemPointsY();
+private:
+    void warning(QProcess::ProcessError error);
 protected:
     bool eventFilter(QObject* obj, QEvent* e);
+
 };
 
 #endif // MAINWINDOW_H

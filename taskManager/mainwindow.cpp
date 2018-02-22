@@ -13,13 +13,19 @@
 #include<qprocess.h>
 #include<qheaderview.h>
 #include<qcompleter.h>
+#include<qmessagebox.h>
+#include"shutdownwindow.h"
+#include<qpixmap.h>
+#include<qpainter.h>
+#include<qlist.h>
+
 #include<iostream>
+
 
 mainWindow::mainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::mainWindow),preCpuStat(new cpuUseState),curCpuStat(new cpuUseState)
-  ,pidToBeKilled(-1)
-  //    ,isEverSelectTabRecord(false)
+  ,pidToBeKilled(-1),isEverTabRecordClicked(false)
 {
     ui->setupUi(this);
     ui->tbrCpuInfo->setStyleSheet("border:0px;background-color:transparent");
@@ -33,13 +39,19 @@ mainWindow::mainWindow(QWidget *parent) :
     connect(timer,&QTimer::timeout,this,&mainWindow::updateCpuUseRate);
     connect(timer,&QTimer::timeout,this,&mainWindow::updateMemUseRate);
     connect(timer,&QTimer::timeout,this,&mainWindow::updateProcessesInfo);
+    connect(timer,&QTimer::timeout,this,&mainWindow::updateCpuHisLine);
+    connect(timer,&QTimer::timeout,this,&mainWindow::updateMemHisLine);
     connect(longTimer,&QTimer::timeout,this,&mainWindow::updateCompletedList);
     connect(ui->btQuery,&QPushButton::clicked,this,&mainWindow::queryProcessInfo);
     connect(ui->btNewPro,&QPushButton::clicked,this,&mainWindow::createANewProcess);
+    //    点击表格头部，按当前点击的列进行字典排序
     //    connect(ui->tbwProInfo->horizontalHeader(),&QHeaderView::sectionClicked,this,&mainWindow::headerSectionClicked);
     connect(btEndTask,&QPushButton::clicked,this,&mainWindow::endTask);
+    connect(btShutdown,&QPushButton::clicked,this,&mainWindow::processShutdown);
     connect(ui->rbutton,&QRadioButton::clicked,this,&mainWindow::updateCompletedList);
-    //    connect(ui->tbwProInfo,&QTableWidget::clicked,[=](){isEverSelectTabRecord=true;});
+    connect(ui->tabWidgets,&QTabWidget::tabBarClicked,this,&mainWindow::processTabClicked);
+
+    initPointsY();
     fillSystemInfo();
     updateTime();
     updateCpuUseRate();
@@ -51,11 +63,20 @@ mainWindow::mainWindow(QWidget *parent) :
     longTimer->start(5000);
 }
 
+void mainWindow::initPointsY()
+{
+    for(int i=0;i<=numOfPoints;i++)
+    {
+        cpuPointsY.append(0);
+        memPointsY.append(0);
+    }
+}
+
 bool mainWindow::eventFilter(QObject* obj, QEvent* e)
 {
-    if(ui->tabWidgets->currentIndex()!=2)
-        return false;
-    if (e->type() == QEvent::KeyPress)
+
+    if (e->type() == QEvent::KeyPress
+            &&ui->tabWidgets->currentIndex()==2)
     {
         QKeyEvent* event = static_cast<QKeyEvent*>(e);
         if (event->key() == Qt::Key_Return)
@@ -64,7 +85,7 @@ bool mainWindow::eventFilter(QObject* obj, QEvent* e)
             return true;
         }
     }
-    return false;
+    return QWidget::eventFilter(obj,e);
 }
 
 QString mainWindow::secTransToDHMS(int seconds)
@@ -119,7 +140,6 @@ QLabel* mainWindow::getAGeneralLabel(int minw)
 {
     QLabel* label=new QLabel(this);
     label->setMinimumWidth(minw);
-    //    abel->setFrameShape(QFrame::WinPanel);
     return label;
 }
 
@@ -151,16 +171,16 @@ void mainWindow::updateCpuUseRate()
 {
     *preCpuStat=*curCpuStat;
     getCpuUseState(curCpuStat);
-    double cpuRate=calcuCpuRate(preCpuStat,curCpuStat);
-    lbCpuUse->setText(QString("CPU使用率 ").append(QString::number(cpuRate,'f',2).append("%")));
+    curCpuRate=calcuCpuRate(preCpuStat,curCpuStat);
+    lbCpuUse->setText(QString("CPU使用率 ").append(QString::number(curCpuRate,'f',2).append("%")));
 }
 
 void mainWindow::updateMemUseRate()
 {
     memUseState mem;
     getMemUseState(&mem);
-    double memRate=calcuMemMemRate(&mem);
-    lbMemUse->setText(QString("内存使用率 ").append(QString::number(memRate,'f',2)).append("%"));
+    curMemRate=calcuMemMemRate(&mem);
+    lbMemUse->setText(QString("内存使用率 ").append(QString::number(curMemRate,'f',2)).append("%"));
 }
 
 void mainWindow::setTBWHeaders()
@@ -205,21 +225,11 @@ void mainWindow::insertARowIntoTable(const processInfo* const process,int rowsIn
 
 }
 
-//void mainWindow::removeAllRows()
-//{//频繁删除插入在高速刷新时效率不行
-//    size_t rows = ui->tbwProInfo->rowCount();
-//    for (size_t index = 0; index < rows; index++)
-//        ui->tbwProInfo->removeRow(0);
-//}
-
 void mainWindow::updateProcessesInfo()
 {
-    //   if(ui->tabWidgets->currentIndex()!=1&&!isEverSelectTabRecord)
-    //      return;
     int row=ui->tbwProInfo->currentIndex().row();
     int hvalue=ui->tbwProInfo->verticalScrollBar()->value();
     getProcessesInfo(processes);
-    //    removeAllRows();
     ui->tbwProInfo->clearContents();
     int rowsIndex=0;
     for(auto iter=processes.begin();iter!=processes.end();++iter,++rowsIndex)
@@ -268,19 +278,67 @@ void mainWindow::queryProcessInfo()
     ui->tbrDetails->setText("检查进程名或检查查询方式是否正确");
 }
 
+void mainWindow::warning(QProcess::ProcessError error)
+{
+    QString errorString="";
+    switch (error) {//来自F1
+    case QProcess::FailedToStart:
+        errorString="找不到该应用程序";
+        //        errorString="The process failed to start."
+        //                    " Either the invoked program is missing,"
+        //                    " or you may have insufficient permissions"
+        //                    " to invoke the program.";
+        break;
+    case QProcess::Crashed:
+        errorString="已结束指定任务";
+        //        errorString="The process crashed some time "
+        //                    "after starting successfully.";
+        break;
+    case QProcess::Timedout:
+        errorString="The last waitFor...() function timed out. "
+                    "The state of QProcess is unchanged,"
+                    " and you can try calling waitFor...() again.";
+        break;
+    case QProcess::WriteError:
+        errorString="An error occurred when attempting to write to the process."
+                    " For example, the process may not be running, "
+                    "or it may have closed its input channel.";
+        break;
+    case QProcess::ReadError:
+        errorString="An error occurred when attempting to read from the process."
+                    " For example, the process may not be running.";
+        break;
+    case QProcess::UnknownError:
+        errorString="An unknown error occurred.";
+        break;
+    default:
+        break;
+    }
+    QMessageBox::warning(this,"注意",errorString);
+}
+
 void mainWindow::createANewProcess()
 {
     QString name=ui->lnEdNewPro->text().trimmed();
-    QProcess* process=new QProcess(this);
-    if(name.contains('&'))
+    if(name.size()!=0)
     {
-        QStringList names=name.split(' ');
-        process->startDetached(names.at(0));
+        process=new QProcess(this);
+        if(name.contains('&'))
+        {
+            QStringList names=name.split(' ');
+            if(process->startDetached(names.at(0)))
+            {
+                return;
+            }
+        }
+        else
+        {
+            connect(process,&QProcess::errorOccurred,this,&mainWindow::warning);
+            process->start(name);
+            return;
+        }
     }
-    else
-    {
-        process->start(name);
-    }
+    QMessageBox::warning(this,"注意","找不到该应用程序");
 }
 
 void mainWindow::killAProcess(pid_t pid)
@@ -291,17 +349,28 @@ void mainWindow::killAProcess(pid_t pid)
 
 void mainWindow::endTask()
 {
+    auto lambda=[=]()-> void {
+        ui->tbrDetails->clear();
+        sleep(1);
+        setCompletedList();
+    };
     if(ui->tabWidgets->currentIndex()==2)
     {
         if(pidToBeKilled!=-1)
         {
             killAProcess(pidToBeKilled);
+            pidToBeKilled=-1;
+            lambda();
         }
     }
     else if(ui->tabWidgets->currentIndex()==1)
     {
         int row=ui->tbwProInfo->currentIndex().row();
-        killAProcess(ui->tbwProInfo->item(row,1)->text().toShort());
+        if(row!=-1)
+        {
+            killAProcess(ui->tbwProInfo->item(row,1)->text().toShort());
+            lambda();
+        }
     }
 }
 
@@ -323,11 +392,100 @@ void mainWindow::setCompletedList()
     ui->lnEdQuery->setCompleter(new QCompleter(keyList));
 }
 
+void mainWindow::getCpuPointsY()
+{
+    cpuPointsY.pop_back();
+    cpuPointsY.insert(0,curCpuRate/100);
+}
+
+void mainWindow::getMemPointsY()
+{
+    memPointsY.pop_back();
+    memPointsY.insert(0,curMemRate/100);
+}
+
+void mainWindow::drawBenchmark(QPixmap * const pix,const QList<double>& pointsY)
+{
+    QPainter painter(pix);
+    pix->fill(Qt::white);
+    painter.setPen(QPen(Qt::black));
+    for(int i=0;i<5;i++)
+    {
+        painter.drawLine(0,40*i+20,842,40*i+20);
+    }
+    int num=numOfPoints/2;
+    int horiStep=840/num;
+    for(int i=0;i<=num;i++)
+    {
+        if(i%10==0)
+        {
+            painter.drawLine(i*horiStep,180,i*horiStep,200);
+        }
+        else
+        {
+            painter.drawLine(i*horiStep,190,i*horiStep,200);
+        }
+
+    }
+    painter.setPen(QPen(QBrush(Qt::red),3));
+    for(int i=0;i<numOfPoints;i++)
+    {
+        int curHeight=(1-pointsY.at(i))*160+20;
+        int nexHeight=(1-pointsY.at(i+1))*160+20;
+        painter.drawLine(i*horiStep,curHeight,(i+1)*horiStep,nexHeight);
+    }
+}
+
+void mainWindow::updateCpuHisLine()
+{
+    if(!isEverTabRecordClicked)
+        return;
+    QPixmap pix(842,200);
+    getCpuPointsY();
+    drawBenchmark(&pix,cpuPointsY);
+    ui->lbCpuHisLine->setPixmap(pix);
+}
+
+void mainWindow::updateMemHisLine()
+{
+    if(!isEverTabRecordClicked)
+        return;
+    QPixmap pix(842,200);
+    getMemPointsY();
+    drawBenchmark(&pix,memPointsY);
+    ui->lbMemHisLine->setPixmap(pix);
+}
+
+void mainWindow::processTabClicked(int index)
+{
+    switch (index) {
+    case 0:
+        break;
+    case 1:
+        updateProcessesInfo();
+        break;
+    case 2:
+        setCompletedList();
+        break;
+    case 3:
+        isEverTabRecordClicked=true;
+        break;
+    default:
+        break;
+    }
+}
+
 void mainWindow::updateCompletedList()
 {
     if(ui->tabWidgets->currentIndex()!=2)
         return;
     setCompletedList();
+}
+
+void mainWindow::processShutdown()
+{
+    shutdownWindow* win=new shutdownWindow(this);
+    win->show();
 }
 
 mainWindow::~mainWindow()
