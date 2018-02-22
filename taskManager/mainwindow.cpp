@@ -187,6 +187,7 @@ void mainWindow::setTBWHeaders()
 {
     QStringList tbwProInfoHeaders;
     tbwProInfoHeaders << "进程名称" << "pid" << "ppid" << "内存占用/KB"<<"优先级(nice)";
+    ui->tbwProInfo->horizontalHeader()->setStyleSheet("font-size:18px;font-family:SimSun");
     ui->tbwProInfo->setHorizontalHeaderLabels(tbwProInfoHeaders);
 }
 
@@ -203,7 +204,7 @@ void mainWindow::insertARowIntoTable(const processInfo* const process,int rowsIn
     QTableWidgetItem* pid=new QTableWidgetItem(QString("%1").arg(process->pid));
     QTableWidgetItem* ppid=new QTableWidgetItem(QString("%1").arg(process->ppid));
     QTableWidgetItem* rss=new QTableWidgetItem(QString("%1").arg(process->rss*getpagesize()/1024));
-    QTableWidgetItem* priority=new QTableWidgetItem(QString("%1").arg(process->priority));
+    QTableWidgetItem* nice=new QTableWidgetItem(QString("%1").arg(process->nice));
 
     if(rowsIndex>=rows)
     {
@@ -212,7 +213,7 @@ void mainWindow::insertARowIntoTable(const processInfo* const process,int rowsIn
         ui->tbwProInfo->setItem(rows, 1, pid);
         ui->tbwProInfo->setItem(rows, 2, ppid);
         ui->tbwProInfo->setItem(rows, 3, rss);
-        ui->tbwProInfo->setItem(rows, 4, priority);
+        ui->tbwProInfo->setItem(rows, 4, nice);
     }
     else
     {
@@ -220,7 +221,7 @@ void mainWindow::insertARowIntoTable(const processInfo* const process,int rowsIn
         ui->tbwProInfo->setItem(rowsIndex, 1, pid);
         ui->tbwProInfo->setItem(rowsIndex, 2, ppid);
         ui->tbwProInfo->setItem(rowsIndex, 3, rss);
-        ui->tbwProInfo->setItem(rowsIndex, 4, priority);
+        ui->tbwProInfo->setItem(rowsIndex, 4, nice);
     }
 
 }
@@ -245,11 +246,16 @@ void mainWindow::updateProcessesInfo()
 
 void mainWindow::showProcessInfo(const processInfo * const process)
 {
-    ui->tbrDetails->setText(QString("进程名     ：  %1").arg(process->name.c_str()));
-    ui->tbrDetails->append(QString("进程pid号   ：  %1").arg(pidToBeKilled=process->pid));
-    ui->tbrDetails->append(QString("父进程pid号 ：  %1").arg(process->ppid));
-    ui->tbrDetails->append(QString("进程占用内存：  %1KB").arg(process->rss*getpagesize()/1024));
-    ui->tbrDetails->append(QString("进程优先级  ：  %1").arg(process->pid));
+    ui->tbrDetails->setText(QString("进程名        ：  %1").arg(process->name.c_str()));
+    ui->tbrDetails->append(QString("进程pid号      ：  %1").arg(pidToBeKilled=process->pid));
+    ui->tbrDetails->append(QString("进程状态       ：  %1").arg(taskStateToString(process->taskState)));
+    ui->tbrDetails->append(QString("父进程pid号    ：  %1").arg(process->ppid));
+    ui->tbrDetails->append(QString("(进)线程组号   ：  %1").arg(process->pgid));
+
+    ui->tbrDetails->append(QString("进程占用内存   ：  %1KB").arg(process->rss*getpagesize()/1024));
+    ui->tbrDetails->append(QString("进程动态优先级 ：  %1").arg(process->priority));
+    ui->tbrDetails->append(QString("进程静态优先级 ：  %1").arg(process->nice));
+    ui->tbrDetails->append(QString("进程调度策略   ：  %1").arg(taskPolicyToString(process->taskPolicy)));
 }
 
 void mainWindow::queryProcessInfo()
