@@ -31,6 +31,7 @@ mainWindow::mainWindow(QWidget *parent) :
     ui->tbrCpuInfo->setStyleSheet("border:0px;background-color:transparent");
     ui->tbrDetails->setStyleSheet("border:0px;background-color:transparent");
     ui->lnEdQuery->installEventFilter(this);
+    setWindowIcon(QIcon(":icons/monitor.png"));
     timer=new QTimer(this);
     QTimer* longTimer=new QTimer(this);
     getCpuUseState(curCpuStat);

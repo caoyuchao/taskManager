@@ -1,9 +1,10 @@
 <RCC>
     <qresource prefix="/icons">
         <file>icons/system-restart-panel.svg</file>
-        <file>icons/system-shutdown-panel.svg</file>
-        <file>icons/system-shutdown-panel-restart.svg</file>
         <file>icons/ubuntu-logo-icon.png</file>
         <file>icons/reboot.png</file>
+        <file>monitor.png</file>
+        <file>monitor2.png</file>
+        <file>monitor3.png</file>
     </qresource>
 </RCC>

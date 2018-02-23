@@ -695,11 +695,12 @@ compiler_rcc_clean:
 	-$(DEL_FILE) qrc_resources.cpp
 qrc_resources.cpp: ../taskManager/resources.qrc \
 		/usr/qt/5.10.1/gcc_64/bin/rcc \
+		../taskManager/monitor.png \
+		../taskManager/monitor3.png \
+		../taskManager/monitor2.png \
 		../taskManager/icons/ubuntu-logo-icon.png \
-		../taskManager/icons/system-shutdown-panel.svg \
 		../taskManager/icons/reboot.png \
-		../taskManager/icons/system-restart-panel.svg \
-		../taskManager/icons/system-shutdown-panel-restart.svg
+		../taskManager/icons/system-restart-panel.svg
 	/usr/qt/5.10.1/gcc_64/bin/rcc -name resources ../taskManager/resources.qrc -o qrc_resources.cpp
 
 compiler_moc_predefs_make_all: moc_predefs.h
@@ -1225,6 +1226,7 @@ mainwindow.o: ../taskManager/mainwindow.cpp ../taskManager/mainwindow.h \
 		/usr/qt/5.10.1/gcc_64/include/QtWidgets/qlayout.h \
 		/usr/qt/5.10.1/gcc_64/include/QtWidgets/qlayoutitem.h \
 		/usr/qt/5.10.1/gcc_64/include/QtWidgets/qboxlayout.h \
+		/usr/qt/5.10.1/gcc_64/include/QtWidgets/QHBoxLayout \
 		/usr/qt/5.10.1/gcc_64/include/QtWidgets/QHeaderView \
 		/usr/qt/5.10.1/gcc_64/include/QtWidgets/qheaderview.h \
 		/usr/qt/5.10.1/gcc_64/include/QtWidgets/qabstractitemview.h \
@@ -1261,6 +1263,7 @@ mainwindow.o: ../taskManager/mainwindow.cpp ../taskManager/mainwindow.h \
 		/usr/qt/5.10.1/gcc_64/include/QtWidgets/qtextbrowser.h \
 		/usr/qt/5.10.1/gcc_64/include/QtWidgets/qtextedit.h \
 		/usr/qt/5.10.1/gcc_64/include/QtGui/qtextdocument.h \
+		/usr/qt/5.10.1/gcc_64/include/QtWidgets/QVBoxLayout \
 		/usr/qt/5.10.1/gcc_64/include/QtWidgets/QWidget \
 		/usr/qt/5.10.1/gcc_64/include/QtCore/qdatetime.h \
 		/usr/qt/5.10.1/gcc_64/include/QtCore/QStringList \
@@ -1271,7 +1274,8 @@ mainwindow.o: ../taskManager/mainwindow.cpp ../taskManager/mainwindow.h \
 		/usr/qt/5.10.1/gcc_64/include/QtWidgets/qmessagebox.h \
 		/usr/qt/5.10.1/gcc_64/include/QtWidgets/qdialog.h \
 		../taskManager/shutdownwindow.h \
-		/usr/qt/5.10.1/gcc_64/include/QtWidgets/QDialog
+		/usr/qt/5.10.1/gcc_64/include/QtWidgets/QDialog \
+		/usr/qt/5.10.1/gcc_64/include/QtGui/qpainter.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o mainwindow.o ../taskManager/mainwindow.cpp
 
 sysinfo.o: ../taskManager/sysinfo.cpp ../taskManager/sysinfo.h
@@ -1538,9 +1542,18 @@ shutdownwindow.o: ../taskManager/shutdownwindow.cpp ../taskManager/shutdownwindo
 		/usr/qt/5.10.1/gcc_64/include/QtWidgets/qtabbar.h \
 		/usr/qt/5.10.1/gcc_64/include/QtWidgets/qtabwidget.h \
 		/usr/qt/5.10.1/gcc_64/include/QtWidgets/qrubberband.h \
+		/usr/qt/5.10.1/gcc_64/include/QtWidgets/QLabel \
+		/usr/qt/5.10.1/gcc_64/include/QtWidgets/qlabel.h \
 		/usr/qt/5.10.1/gcc_64/include/QtWidgets/QPushButton \
 		/usr/qt/5.10.1/gcc_64/include/QtWidgets/qpushbutton.h \
-		/usr/qt/5.10.1/gcc_64/include/QtWidgets/qabstractbutton.h
+		/usr/qt/5.10.1/gcc_64/include/QtWidgets/qabstractbutton.h \
+		/usr/qt/5.10.1/gcc_64/include/QtWidgets/qinputdialog.h \
+		/usr/qt/5.10.1/gcc_64/include/QtWidgets/qlineedit.h \
+		/usr/qt/5.10.1/gcc_64/include/QtGui/qtextcursor.h \
+		/usr/qt/5.10.1/gcc_64/include/QtGui/qtextformat.h \
+		/usr/qt/5.10.1/gcc_64/include/QtGui/qpen.h \
+		/usr/qt/5.10.1/gcc_64/include/QtGui/qtextoption.h \
+		/usr/qt/5.10.1/gcc_64/include/QtWidgets/qmessagebox.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o shutdownwindow.o ../taskManager/shutdownwindow.cpp
 
 qrc_resources.o: qrc_resources.cpp 
