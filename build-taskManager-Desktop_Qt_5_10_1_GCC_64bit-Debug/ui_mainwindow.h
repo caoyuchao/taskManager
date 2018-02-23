@@ -62,7 +62,9 @@ public:
     QGridLayout *gridLayout_3;
     QVBoxLayout *verticalLayout;
     QHBoxLayout *horizontalLayout;
+    QLabel *lbCpuLegend;
     QLabel *lbCpuHis;
+    QLabel *label_2;
     QHBoxLayout *horizontalLayout_4;
     QVBoxLayout *verticalLayout_2;
     QLabel *lbCpu100;
@@ -72,7 +74,9 @@ public:
     QLabel *lbCpu0;
     QLabel *lbCpuHisLine;
     QHBoxLayout *horizontalLayout_3;
+    QLabel *lbMemLegend;
     QLabel *lbMemHis;
+    QLabel *label;
     QHBoxLayout *horizontalLayout_5;
     QVBoxLayout *verticalLayout_3;
     QLabel *lbMem100;
@@ -87,7 +91,7 @@ public:
     {
         if (mainWindow->objectName().isEmpty())
             mainWindow->setObjectName(QStringLiteral("mainWindow"));
-        mainWindow->resize(954, 600);
+        mainWindow->resize(956, 600);
         QSizePolicy sizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
         sizePolicy.setHorizontalStretch(0);
         sizePolicy.setVerticalStretch(0);
@@ -213,12 +217,27 @@ public:
         horizontalLayout = new QHBoxLayout();
         horizontalLayout->setSpacing(6);
         horizontalLayout->setObjectName(QStringLiteral("horizontalLayout"));
+        lbCpuLegend = new QLabel(tbRecord);
+        lbCpuLegend->setObjectName(QStringLiteral("lbCpuLegend"));
+        lbCpuLegend->setMinimumSize(QSize(170, 35));
+        lbCpuLegend->setMaximumSize(QSize(170, 35));
+
+        horizontalLayout->addWidget(lbCpuLegend);
+
         lbCpuHis = new QLabel(tbRecord);
         lbCpuHis->setObjectName(QStringLiteral("lbCpuHis"));
         lbCpuHis->setMaximumSize(QSize(16777215, 35));
         lbCpuHis->setAlignment(Qt::AlignCenter);
 
         horizontalLayout->addWidget(lbCpuHis);
+
+        label_2 = new QLabel(tbRecord);
+        label_2->setObjectName(QStringLiteral("label_2"));
+        label_2->setMinimumSize(QSize(90, 0));
+        label_2->setMaximumSize(QSize(90, 35));
+        label_2->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
+
+        horizontalLayout->addWidget(label_2);
 
 
         verticalLayout->addLayout(horizontalLayout);
@@ -280,12 +299,27 @@ public:
         horizontalLayout_3 = new QHBoxLayout();
         horizontalLayout_3->setSpacing(6);
         horizontalLayout_3->setObjectName(QStringLiteral("horizontalLayout_3"));
+        lbMemLegend = new QLabel(tbRecord);
+        lbMemLegend->setObjectName(QStringLiteral("lbMemLegend"));
+        lbMemLegend->setMinimumSize(QSize(170, 0));
+        lbMemLegend->setMaximumSize(QSize(170, 35));
+
+        horizontalLayout_3->addWidget(lbMemLegend);
+
         lbMemHis = new QLabel(tbRecord);
         lbMemHis->setObjectName(QStringLiteral("lbMemHis"));
         lbMemHis->setMaximumSize(QSize(16777215, 35));
         lbMemHis->setAlignment(Qt::AlignCenter);
 
         horizontalLayout_3->addWidget(lbMemHis);
+
+        label = new QLabel(tbRecord);
+        label->setObjectName(QStringLiteral("label"));
+        label->setMinimumSize(QSize(90, 0));
+        label->setMaximumSize(QSize(90, 35));
+        label->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
+
+        horizontalLayout_3->addWidget(label);
 
 
         verticalLayout->addLayout(horizontalLayout_3);
@@ -391,14 +425,18 @@ public:
         btQuery->setText(QApplication::translate("mainWindow", "\346\237\245\350\257\242", nullptr));
         btNewPro->setText(QApplication::translate("mainWindow", "\345\273\272\347\253\213\346\226\260\350\277\233\347\250\213", nullptr));
         tabWidgets->setTabText(tabWidgets->indexOf(tbService), QApplication::translate("mainWindow", "\346\234\215\345\212\241", nullptr));
+        lbCpuLegend->setText(QApplication::translate("mainWindow", "CPU-\347\272\242\350\211\262", nullptr));
         lbCpuHis->setText(QApplication::translate("mainWindow", "CPU\344\275\277\347\224\250\345\216\206\345\217\262\346\233\262\347\272\277", nullptr));
+        label_2->setText(QApplication::translate("mainWindow", "(120\347\247\222)", nullptr));
         lbCpu100->setText(QApplication::translate("mainWindow", "100%", nullptr));
         lbCpu75->setText(QApplication::translate("mainWindow", "75%", nullptr));
         lbCpu50->setText(QApplication::translate("mainWindow", "50%", nullptr));
         lbCpu25->setText(QApplication::translate("mainWindow", "25%", nullptr));
         lbCpu0->setText(QApplication::translate("mainWindow", "0%", nullptr));
         lbCpuHisLine->setText(QString());
+        lbMemLegend->setText(QApplication::translate("mainWindow", "Mem-\347\272\242\350\211\262 Swap-\350\223\235\350\211\262", nullptr));
         lbMemHis->setText(QApplication::translate("mainWindow", "\345\206\205\345\255\230\344\275\277\347\224\250\345\216\206\345\217\262\346\233\262\347\272\277", nullptr));
+        label->setText(QApplication::translate("mainWindow", "(120\347\247\222)", nullptr));
         lbMem100->setText(QApplication::translate("mainWindow", "100%", nullptr));
         lbMem75->setText(QApplication::translate("mainWindow", "75%", nullptr));
         lbMem50->setText(QApplication::translate("mainWindow", "50%", nullptr));

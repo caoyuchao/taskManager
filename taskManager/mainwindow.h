@@ -43,6 +43,7 @@ private:
     double curMemRate;
     QList<double> cpuPointsY;
     QList<double> memPointsY;
+    QList<double> swapPointsY;
     //    size_t sortColumnIndex;排序很坑,按照字符串字典序排
 
 private:
@@ -68,12 +69,13 @@ private:
     void setCompletedList();
     void processTabClicked(int index);
     void processShutdown();
-    void drawBenchmark(QPixmap* const pix,const QList<double>& pointsY);
+    void drawBenchmark(QPixmap* const pix,const QList<double>& pointsY,const QColor& color);
     void updateCpuHisLine();
     void updateMemHisLine();
     void initPointsY();
     void getCpuPointsY();
     void getMemPointsY();
+    void getSwapPointsY();
 private:
     void warning(QProcess::ProcessError error);
 protected:

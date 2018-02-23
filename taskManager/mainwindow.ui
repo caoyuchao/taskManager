@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>954</width>
+    <width>956</width>
     <height>600</height>
    </rect>
   </property>
@@ -329,6 +329,25 @@
             <item>
              <layout class="QHBoxLayout" name="horizontalLayout">
               <item>
+               <widget class="QLabel" name="lbCpuLegend">
+                <property name="minimumSize">
+                 <size>
+                  <width>170</width>
+                  <height>35</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>170</width>
+                  <height>35</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>CPU-红色</string>
+                </property>
+               </widget>
+              </item>
+              <item>
                <widget class="QLabel" name="lbCpuHis">
                 <property name="maximumSize">
                  <size>
@@ -341,6 +360,28 @@
                 </property>
                 <property name="alignment">
                  <set>Qt::AlignCenter</set>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="label_2">
+                <property name="minimumSize">
+                 <size>
+                  <width>90</width>
+                  <height>0</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>90</width>
+                  <height>35</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>(120秒)</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                 </property>
                </widget>
               </item>
@@ -471,6 +512,25 @@
             <item>
              <layout class="QHBoxLayout" name="horizontalLayout_3">
               <item>
+               <widget class="QLabel" name="lbMemLegend">
+                <property name="minimumSize">
+                 <size>
+                  <width>170</width>
+                  <height>0</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>170</width>
+                  <height>35</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>Mem-红色 Swap-蓝色</string>
+                </property>
+               </widget>
+              </item>
+              <item>
                <widget class="QLabel" name="lbMemHis">
                 <property name="maximumSize">
                  <size>
@@ -483,6 +543,28 @@
                 </property>
                 <property name="alignment">
                  <set>Qt::AlignCenter</set>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="label">
+                <property name="minimumSize">
+                 <size>
+                  <width>90</width>
+                  <height>0</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>90</width>
+                  <height>35</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>(120秒)</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                 </property>
                </widget>
               </item>

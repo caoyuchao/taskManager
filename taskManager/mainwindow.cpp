@@ -69,6 +69,7 @@ void mainWindow::initPointsY()
     {
         cpuPointsY.append(0);
         memPointsY.append(0);
+        swapPointsY.append(0);
     }
 }
 
@@ -384,13 +385,16 @@ void mainWindow::setCompletedList()
 {
     bool isChecked=ui->rbutton->isChecked();
     QStringList keyList;
-    for(auto iter=processes.begin();iter!=processes.end();++iter)
+    if(isChecked)
     {
-        if(isChecked)
+        for(auto iter=processes.begin();iter!=processes.end();++iter)
         {
             keyList<<iter.value()->name.c_str();
         }
-        else
+    }
+    else
+    {
+        for(auto iter=processes.begin();iter!=processes.end();++iter)
         {
             keyList<<QString("%1").arg(iter.key());
         }
@@ -410,10 +414,15 @@ void mainWindow::getMemPointsY()
     memPointsY.insert(0,curMemRate/100);
 }
 
-void mainWindow::drawBenchmark(QPixmap * const pix,const QList<double>& pointsY)
+void mainWindow::getSwapPointsY()
+{
+    swapPointsY.pop_back();
+    swapPointsY.insert(0,(int)getSwapRate());
+}
+
+void mainWindow::drawBenchmark(QPixmap * const pix,const QList<double>& pointsY,const QColor& color)
 {
     QPainter painter(pix);
-    pix->fill(Qt::white);
     painter.setPen(QPen(Qt::black));
     for(int i=0;i<5;i++)
     {
@@ -433,7 +442,7 @@ void mainWindow::drawBenchmark(QPixmap * const pix,const QList<double>& pointsY)
         }
 
     }
-    painter.setPen(QPen(QBrush(Qt::red),3));
+    painter.setPen(QPen(QBrush(color),3));
     for(int i=0;i<numOfPoints;i++)
     {
         int curHeight=(1-pointsY.at(i))*160+20;
@@ -447,8 +456,9 @@ void mainWindow::updateCpuHisLine()
     if(!isEverTabRecordClicked)
         return;
     QPixmap pix(842,200);
+    pix.fill(Qt::white);
     getCpuPointsY();
-    drawBenchmark(&pix,cpuPointsY);
+    drawBenchmark(&pix,cpuPointsY,Qt::red);
     ui->lbCpuHisLine->setPixmap(pix);
 }
 
@@ -457,8 +467,12 @@ void mainWindow::updateMemHisLine()
     if(!isEverTabRecordClicked)
         return;
     QPixmap pix(842,200);
+    pix.fill(Qt::white);
     getMemPointsY();
-    drawBenchmark(&pix,memPointsY);
+    drawBenchmark(&pix,memPointsY,Qt::red);
+    //ui->lbMemHisLine->setPixmap(pix);
+    //QPixmap curPix=*(ui->lbMemHisLine->pixmap());
+    drawBenchmark(&pix,swapPointsY,Qt::blue);
     ui->lbMemHisLine->setPixmap(pix);
 }
 

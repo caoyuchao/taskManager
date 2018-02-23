@@ -4,6 +4,7 @@
 #include<string>
 #include<qfile.h>
 
+#include<iostream>
 //struct memUseState
 //{
 //    size_t memTotal;
@@ -63,4 +64,23 @@ double calcuMemMemRate(const memUseState * const curMemState)
         memRate=curMemState->getMemUnUsed()*100.0/curMemState->memTotal;
     }
     return memRate;
+}
+
+double getSwapRate()
+{
+    QFile in("/proc/swaps");
+    if(in.open(QIODevice::ReadOnly))
+    {
+        QStringList data=QString(in.readLine()).split(' ');
+        size_t swapSize=data.at(2).toUInt();
+        if(swapSize!=0)
+        {
+            std::cout<<swapSize<<std::endl;
+            size_t swapUsed=data.at(3).toUInt();
+            std::cout<<swapUsed<<std::endl;
+            return swapUsed*1.0/swapSize;
+        }
+    }
+    return 0;
+
 }
