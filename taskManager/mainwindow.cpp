@@ -429,17 +429,17 @@ void mainWindow::drawBenchmark(QPixmap * const pix,const QList<double>& pointsY,
     {
         painter.drawLine(0,40*i+20,842,40*i+20);
     }
-    int num=numOfPoints/2;
-    int horiStep=840/num;
+    int num=numOfPoints/ruler;
+    int horiStep=840/numOfPoints;
     for(int i=0;i<=num;i++)
     {
         if(i%10==0)
         {
-            painter.drawLine(i*horiStep,180,i*horiStep,200);
+            painter.drawLine(i*horiStep*ruler,180,i*horiStep*ruler,200);
         }
         else
         {
-            painter.drawLine(i*horiStep,190,i*horiStep,200);
+            painter.drawLine(i*horiStep*ruler,190,i*horiStep*ruler,200);
         }
 
     }
@@ -471,11 +471,19 @@ void mainWindow::updateMemHisLine()
     pix.fill(Qt::white);
     getMemPointsY();
     drawBenchmark(&pix,memPointsY);
+    getSwapPointsY();
     drawBenchmark(&pix,swapPointsY,Qt::blue);
     ui->lbMemHisLine->setPixmap(pix);
+}
+
+void mainWindow::beforeDrawLine()
+{
     memUseState mem;
     getMemUseState(&mem);
     ui->lbMemCap->setText(QString("内存大小：%1MB").arg(mem.memTotal/1024));
+    ui->lbSwapCap->setText(QString("交换空间大小：%1MB").arg(getSwapSize()/1024));
+    ui-> lbMemHisTime->setText(QString("(%1秒)").arg(numOfPoints));
+    ui->lbCPUHisTime->setText(QString("(%1秒)").arg(numOfPoints));
 }
 
 void mainWindow::processTabClicked(int index)
@@ -490,6 +498,7 @@ void mainWindow::processTabClicked(int index)
         setCompletedList();
         break;
     case 3:
+        beforeDrawLine();
         isEverTabRecordClicked=true;
         break;
     default:

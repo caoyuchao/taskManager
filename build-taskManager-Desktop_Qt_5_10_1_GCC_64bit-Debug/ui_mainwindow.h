@@ -64,7 +64,7 @@ public:
     QHBoxLayout *horizontalLayout;
     QLabel *lbCpuLegend;
     QLabel *lbCpuHis;
-    QLabel *label_2;
+    QLabel *lbCPUHisTime;
     QHBoxLayout *horizontalLayout_4;
     QVBoxLayout *verticalLayout_2;
     QLabel *lbCpu100;
@@ -77,7 +77,8 @@ public:
     QLabel *lbMemLegend;
     QLabel *lbMemCap;
     QLabel *lbMemHis;
-    QLabel *label;
+    QLabel *lbSwapCap;
+    QLabel *lbMemHisTime;
     QHBoxLayout *horizontalLayout_5;
     QVBoxLayout *verticalLayout_3;
     QLabel *lbMem100;
@@ -232,13 +233,13 @@ public:
 
         horizontalLayout->addWidget(lbCpuHis);
 
-        label_2 = new QLabel(tbRecord);
-        label_2->setObjectName(QStringLiteral("label_2"));
-        label_2->setMinimumSize(QSize(90, 0));
-        label_2->setMaximumSize(QSize(90, 35));
-        label_2->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
+        lbCPUHisTime = new QLabel(tbRecord);
+        lbCPUHisTime->setObjectName(QStringLiteral("lbCPUHisTime"));
+        lbCPUHisTime->setMinimumSize(QSize(90, 0));
+        lbCPUHisTime->setMaximumSize(QSize(90, 35));
+        lbCPUHisTime->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
 
-        horizontalLayout->addWidget(label_2);
+        horizontalLayout->addWidget(lbCPUHisTime);
 
 
         verticalLayout->addLayout(horizontalLayout);
@@ -321,13 +322,20 @@ public:
 
         horizontalLayout_3->addWidget(lbMemHis);
 
-        label = new QLabel(tbRecord);
-        label->setObjectName(QStringLiteral("label"));
-        label->setMinimumSize(QSize(270, 0));
-        label->setMaximumSize(QSize(270, 35));
-        label->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
+        lbSwapCap = new QLabel(tbRecord);
+        lbSwapCap->setObjectName(QStringLiteral("lbSwapCap"));
+        lbSwapCap->setMinimumSize(QSize(180, 35));
+        lbSwapCap->setMaximumSize(QSize(180, 35));
 
-        horizontalLayout_3->addWidget(label);
+        horizontalLayout_3->addWidget(lbSwapCap);
+
+        lbMemHisTime = new QLabel(tbRecord);
+        lbMemHisTime->setObjectName(QStringLiteral("lbMemHisTime"));
+        lbMemHisTime->setMinimumSize(QSize(90, 0));
+        lbMemHisTime->setMaximumSize(QSize(90, 35));
+        lbMemHisTime->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
+
+        horizontalLayout_3->addWidget(lbMemHisTime);
 
 
         verticalLayout->addLayout(horizontalLayout_3);
@@ -435,7 +443,7 @@ public:
         tabWidgets->setTabText(tabWidgets->indexOf(tbService), QApplication::translate("mainWindow", "\346\234\215\345\212\241", nullptr));
         lbCpuLegend->setText(QApplication::translate("mainWindow", "CPU-\347\272\242\350\211\262", nullptr));
         lbCpuHis->setText(QApplication::translate("mainWindow", "CPU\344\275\277\347\224\250\345\216\206\345\217\262\346\233\262\347\272\277", nullptr));
-        label_2->setText(QApplication::translate("mainWindow", "(120\347\247\222)", nullptr));
+        lbCPUHisTime->setText(QString());
         lbCpu100->setText(QApplication::translate("mainWindow", "100%", nullptr));
         lbCpu75->setText(QApplication::translate("mainWindow", "75%", nullptr));
         lbCpu50->setText(QApplication::translate("mainWindow", "50%", nullptr));
@@ -445,7 +453,8 @@ public:
         lbMemLegend->setText(QApplication::translate("mainWindow", "Mem-\347\272\242\350\211\262 Swap-\350\223\235\350\211\262", nullptr));
         lbMemCap->setText(QString());
         lbMemHis->setText(QApplication::translate("mainWindow", "\345\206\205\345\255\230\344\275\277\347\224\250\345\216\206\345\217\262\346\233\262\347\272\277", nullptr));
-        label->setText(QApplication::translate("mainWindow", "(120\347\247\222)", nullptr));
+        lbSwapCap->setText(QString());
+        lbMemHisTime->setText(QString());
         lbMem100->setText(QApplication::translate("mainWindow", "100%", nullptr));
         lbMem75->setText(QApplication::translate("mainWindow", "75%", nullptr));
         lbMem50->setText(QApplication::translate("mainWindow", "50%", nullptr));

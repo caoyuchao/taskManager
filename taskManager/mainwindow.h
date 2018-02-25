@@ -24,6 +24,7 @@ public:
     ~mainWindow();
 private:
     const int numOfPoints = 120;
+    const int ruler=1;
 
 private:
     QLabel* lbCurTime;
@@ -76,6 +77,7 @@ private:
     void getCpuPointsY();
     void getMemPointsY();
     void getSwapPointsY();
+    void beforeDrawLine();
 private:
     void warning(QProcess::ProcessError error);
 protected:

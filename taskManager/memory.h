@@ -15,4 +15,5 @@ struct memUseState
 void getMemUseState(memUseState* const curMem);
 double calcuMemMemRate(const memUseState* const curMemState);
 double getSwapRate();
+size_t getSwapSize();
 #endif // MEMORY_H
