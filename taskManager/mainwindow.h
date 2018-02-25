@@ -69,7 +69,7 @@ private:
     void setCompletedList();
     void processTabClicked(int index);
     void processShutdown();
-    void drawBenchmark(QPixmap* const pix,const QList<double>& pointsY,const QColor& color);
+    void drawBenchmark(QPixmap* const pix,const QList<double>& pointsY,const QColor& color=Qt::red);
     void updateCpuHisLine();
     void updateMemHisLine();
     void initPointsY();

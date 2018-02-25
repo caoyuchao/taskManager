@@ -459,7 +459,7 @@ void mainWindow::updateCpuHisLine()
     QPixmap pix(842,200);
     pix.fill(Qt::white);
     getCpuPointsY();
-    drawBenchmark(&pix,cpuPointsY,Qt::red);
+    drawBenchmark(&pix,cpuPointsY);
     ui->lbCpuHisLine->setPixmap(pix);
 }
 
@@ -470,11 +470,12 @@ void mainWindow::updateMemHisLine()
     QPixmap pix(842,200);
     pix.fill(Qt::white);
     getMemPointsY();
-    drawBenchmark(&pix,memPointsY,Qt::red);
-    //ui->lbMemHisLine->setPixmap(pix);
-    //QPixmap curPix=*(ui->lbMemHisLine->pixmap());
+    drawBenchmark(&pix,memPointsY);
     drawBenchmark(&pix,swapPointsY,Qt::blue);
     ui->lbMemHisLine->setPixmap(pix);
+    memUseState mem;
+    getMemUseState(&mem);
+    ui->lbMemCap->setText(QString("内存大小：%1MB").arg(mem.memTotal/1024));
 }
 
 void mainWindow::processTabClicked(int index)
